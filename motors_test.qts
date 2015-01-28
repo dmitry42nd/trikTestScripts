@@ -7,30 +7,27 @@ var e2 = brick.encoder("B2");
 var e3 = brick.encoder("B3");
 var e4 = brick.encoder("B4");
 
-var power = 100;
+var power = 50;
 var ed1=0;
 var ed2=0;
 var ed3=0;
 var ed4=0;
 
-        e1.reset();
-        e2.reset();
-        e3.reset();
-        e4.reset();
-    m1.setPower(power);
-    m2.setPower(power);
-    m3.setPower(power); 
-    m4.setPower(power);
+e1.reset();
+e2.reset();
+e3.reset();
+e4.reset();
 
-brick.repeat(10000, function() {
-	power*=-1;
-	m1.setPower(power);
-	m2.setPower(power);
-	m3.setPower(power);
-	m4.setPower(power);
-});
-
-brick.repeat(200, function() {
+var i =0;
+while(1) {
+	if(i == 0) {
+	        power*=-1;         
+	        m1.setPower(power);  
+	        m2.setPower(power);  
+	        m3.setPower(power);  
+	        m4.setPower(power); 
+	}
+	i = (i + 1) % 100;
 	ed1=e1.read();
 	ed2=e2.read();
 	ed3=e3.read();
@@ -38,7 +35,8 @@ brick.repeat(200, function() {
 	brick.display().addLabel("E1:{0}\t E2:{1}\n".format(ed1, ed2), 0, 0);
 	brick.display().addLabel("E3:{0}\t E4:{1}\n".format(ed3, ed4), 0, 30);
 	print("E1:{0}\t\t E2:{1}\t\t E3:{2}\t\t E4:{3}\n".format(ed1, ed2, ed3, ed4));
-});
+	brick.wait(100);
+}
 
 
 brick.run();
