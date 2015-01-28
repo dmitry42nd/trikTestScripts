@@ -1,0 +1,45 @@
+var m1 = brick.motor("M1");
+var m2 = brick.motor("M2");
+var m3 = brick.motor("M3");
+var m4 = brick.motor("M4");
+var e1 = brick.encoder("B1");
+var e2 = brick.encoder("B2");
+var e3 = brick.encoder("B3");
+var e4 = brick.encoder("B4");
+
+var power = 100;
+var ed1=0;
+var ed2=0;
+var ed3=0;
+var ed4=0;
+
+        e1.reset();
+        e2.reset();
+        e3.reset();
+        e4.reset();
+    m1.setPower(power);
+    m2.setPower(power);
+    m3.setPower(power); 
+    m4.setPower(power);
+
+brick.repeat(10000, function() {
+	power*=-1;
+	m1.setPower(power);
+	m2.setPower(power);
+	m3.setPower(power);
+	m4.setPower(power);
+});
+
+brick.repeat(200, function() {
+	ed1=e1.read();
+	ed2=e2.read();
+	ed3=e3.read();
+	ed4=e4.read();
+	brick.display().addLabel("E1:{0}\t E2:{1}\n".format(ed1, ed2), 0, 0);
+	brick.display().addLabel("E3:{0}\t E4:{1}\n".format(ed3, ed4), 0, 30);
+	print("E1:{0}\t\t E2:{1}\t\t E3:{2}\t\t E4:{3}\n".format(ed1, ed2, ed3, ed4));
+});
+
+
+brick.run();
+brick.run();

@@ -1,0 +1,9 @@
+var d1 = brick.sensor("D1");
+var d2 = brick.sensor("D2");
+
+brick.repeat(100, function() {                                                            
+        brick.display().addLabel("D1: {0}\t D2:{1}\n".format(d1.read(), d2.read()), 0, 0);
+});                                                                                         
+                        
+brick.run();
+
