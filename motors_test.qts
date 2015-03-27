@@ -35,9 +35,7 @@ while(1) {
 	brick.display().addLabel("E1:{0}\t E2:{1}\n".format(ed1, ed2), 0, 0);
 	brick.display().addLabel("E3:{0}\t E4:{1}\n".format(ed3, ed4), 0, 30);
 	print("E1:{0}\t\t E2:{1}\t\t E3:{2}\t\t E4:{3}\n".format(ed1, ed2, ed3, ed4));
-	brick.wait(100);
+	script.wait(100);
 }
 
-
-brick.run();
-brick.run();
+script.run();
