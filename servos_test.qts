@@ -1,0 +1,30 @@
+var servos = [brick.motor("E1"),
+              brick.motor("E2"),
+              brick.motor("E3"),
+              brick.motor("C1"),
+              brick.motor("C2"),
+              brick.motor("C3")];
+
+var allSetPower = function(_power) {
+  for (var i = 0; i < 6; i++) {
+    servos[i].setPower(_power);
+  }
+}
+
+var allPowerOff = function() {
+  for (var i = 0; i < 6; i++) {
+    servos[i].powerOff();
+  }
+}
+
+while(true) {
+  allSetPower(-100);
+  script.wait(1000);
+  allPowerOff();
+  script.wait(500);
+  allSetPower(100);
+  script.wait(1000);
+  allPowerOff();
+  script.wait(500);
+}
+
