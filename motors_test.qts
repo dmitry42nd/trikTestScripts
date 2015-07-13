@@ -1,3 +1,26 @@
+/* The MIT License (MIT)
+*
+* Copyright (c) 2015 Artur Baykov, Dmitry Soldatov
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
+
 var m1 = brick.motor("M1");
 var m2 = brick.motor("M2");
 var m3 = brick.motor("M3");
@@ -23,79 +46,116 @@ e2.reset();
 e3.reset();
 e4.reset();
 
-var i = 0;
-var period = 500;
-var motorCoeff = 9*period/1000;
+var i =0;
+var motorCoeff = 9/2;
+brick.display().setPainterWidth(20);
+
 
 var setLabel = function(_text, _x, _y) {
-  brick.display().setPainterColor("black");
-  brick.display().addLabel(_text, _x, _y);
+	brick.display().addLabel(_text, _x, _y);
 }
 
 var setColoredRect = function(_rpm, _w, _h, _x , _y) {
   
   rpm = Math.abs(_rpm);
+  print(rpm);
+  brick.display().setPainterWidth(20);
 
-  if(rpm == 0) {
-    print("gray");
-    brick.display().setPainterColor("gray");
-  } else if ((rpm > 85) && (rpm <= 120)) {
+  if ((rpm >= 90) && (rpm <= 100)) 
+  {
     print("green");
     brick.display().setPainterColor("green");
-  } else if ((rpm > 55) && (rpm <= 85)) {
-    print("yellow");
-    brick.display().setPainterColor("yellow");
-  } else {
-    print("red");
-    brick.display().setPainterColor("red");
+    brick.display().drawRect(_w, _h, _x, _y);
   } 
-  
-//  brick.display().setPainterColor("gray");
-  brick.display().setPainterWidth(20); 
-  brick.display().drawRect(_w, _h, _x, _y);
+  else
+  {
+    if ((rpm > 70) && (rpm < 90)) 
+    {
+      print("yellow");
+      brick.display().setPainterColor("yellow");
+      brick.display().drawRect(_w, _h, _x, _y);
+
+    } 
+    else
+    {
+      if(((rpm > 0) && (rpm <= 70)) || (rpm >100))
+      {
+        print("red");
+        brick.display().setPainterColor("red");
+        brick.display().drawRect(_w, _h, _x, _y);
+
+      } 
+      else
+      {
+        if(rpm == 0) 
+        {
+          print("gray");
+          brick.display().setPainterColor("gray");
+          brick.display().drawRect(_w, _h, _x, _y);
+
+        }
+      }
+    }
+  }
+  //brick.display().drawRect(_w, _h, _x, _y);
 }
 
+/*  
+  brick.display().setPainterColor("gray");
+  brick.display().drawRect(_w, _h, _x, _y);
+}
+*/
 while(1) {
-  ed1new=e1.readRawData();
-  ed2new=e2.readRawData();
-  ed3new=e3.readRawData();
-  ed4new=e4.readRawData();
 
-  if(i == 0) {
+        ed1new=e1.readRawData();
+        ed2new=e2.readRawData();
+        ed3new=e3.readRawData();
+        ed4new=e4.readRawData();
+  
+	if(i == 0) {
+	        power*=-1;         
+	        m1.setPower(power);  
+	        m2.setPower(power);  
+	        m3.setPower(power);  
+	        m4.setPower(power); 
+	}
+	i = (i + 1) % 6;
+	
+	var ed1 = Math.round((ed1new - ed1old)/motorCoeff);
+	var ed2 = Math.round((ed2new - ed2old)/motorCoeff);
+        var ed3 = Math.round((ed3new - ed3old)/motorCoeff);
+	var ed4 = Math.round((ed4new - ed4old)/motorCoeff);
+	
+        //brick.display().clear();
 
-    power*=-1;         
-    m1.setPower(power);  
-    m2.setPower(power);  
-    m3.setPower(power);  
-    m4.setPower(power); 
-  }
-  i = (i + 1) % 6;
+        brick.display().setPainterColor("black");
+        //M1
+	setLabel("{0}\n".format(ed1),30,30);
+	//M2
+	setLabel("{0}\n".format(ed2),140+10,30);
+	//M3
+	setLabel("{0}\n".format(ed4),30,210+10);
+	//M4
+        setLabel("{0}\n".format(ed3),140+10,210+10);
+        
+        
+        //M1
+        setColoredRect(ed1, 20, 20, 70, 50);
+        //M2
+        setColoredRect(ed2, 140, 20, 70, 50);
+        //M3
+        setColoredRect(ed4, 20, 210, 70, 50);
+        //M4
+        setColoredRect(ed3, 140, 210, 70, 50);
 
-  var ed1 = Math.round((ed1new - ed1old)/motorCoeff);
-  var ed2 = Math.round((ed2new - ed2old)/motorCoeff);
-  var ed3 = Math.round((ed3new - ed3old)/motorCoeff);
-  var ed4 = Math.round((ed4new - ed4old)/motorCoeff);
 
-  brick.display().clear();
-  //M1
-  setLabel("{0}\n".format(ed1),30,30);
-  setColoredRect(ed1, 20, 20, 70, 50);
-  //M2
-  setLabel("{0}\n".format(ed2),140+10,30);
-  setColoredRect(ed2, 140, 20, 70, 50);
-  //M3
-  setLabel("{0}\n".format(ed3),30,210+10);
-  setColoredRect(ed3, 20, 210, 70, 50);
-  //M4
-  setLabel("{0}\n".format(ed4),140+10,210+10);
-  setColoredRect(ed4, 140, 210, 70, 50);
 
-  ed1old = e1.readRawData();
-  ed2old = e2.readRawData();
-  ed3old = e3.readRawData();
-  ed4old = e4.readRawData();
-
-  script.wait(period);
+        ed1old=e1.readRawData();
+        ed2old=e2.readRawData();
+        ed3old=e3.readRawData();
+        ed4old=e4.readRawData();
+	
+  script.wait(500);
 }
 
 script.run();
