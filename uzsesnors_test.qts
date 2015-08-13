@@ -1,32 +1,46 @@
-/* The MIT License (MIT)
-*
-* Copyright (c) 2015 Artur Baykov, Dmitry Soldatov
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
+//UZ sensor testing script, SOldatov Dmitry 2015
+/*
+  Среднеквадратическое отклонение считается по формуле disp = sqrt(sum(x[i]-xTgt,i)^2/N)
+  1. Фиксируем датчик
+  2. Жмем UP (фиксируется целевая дистанция до объекта)
+  3. Каждые cntM*20мс обновляется среднеквадратическое отклонение
+  4. По нажатию на UP можно обновлять целевую дистанцию до объекта
 */
 
 var d1 = brick.sensor("D1");
-var d2 = brick.sensor("D2");
 
-while(1) {
-	brick.display().addLabel("D1: {0}\t D2:{1}\n".format(d1.read(), d2.read()), 0, 0);
-	script.wait(100);
+var cntM = 100; //dispersion loop limit
+var dTgt = 0;   //target distance
+
+
+print("Press UP to detect target distance");
+while (!brick.keys().wasPressed(KeysEnum.Up)) {
+  var d = d1.read();
+  print(d);
+  brick.display().addLabel("D1: {0}\n".format(d), 0, 0);
+	script.wait(20);
 }
+dTgt = d1.read();
+print("target distance:",dTgt);
+script.wait(1000);
 
-brick.run();
+while (true) {
+  if (brick.keys().wasPressed(KeysEnum.Up)) {
+    dTgt = d1.read();
+    print("target distance:",dTgt);
+    script.wait(1000);
+  }
+  var sum = 0;
+  var cnt = 0;
+  while(cnt < cntM) {
+    var d = d1.read();
+    sum += Math.pow((d - dTgt),2);
+    print(d);
+	  brick.display().addLabel("D1: {0}\t TgtD: {1}\n".format(d, dTgt), 0, 0);
+	  cnt+=1;
+	  script.wait(20);
+  }
+  var disp = Math.sqrt(sum/cntM);
+  print("dispersion:", disp);
+  brick.display().addLabel("Std dev: {0}\n".format(disp.toFixed(2)), 0, 20);
+}
