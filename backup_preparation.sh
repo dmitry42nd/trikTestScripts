@@ -34,8 +34,8 @@ then
 	echo "update_config=1" >> $wpa_supplicant
 fi
 
-rm backup_preparation.sh
+rm $0
 
-#sync
+sync
 
 #halt
